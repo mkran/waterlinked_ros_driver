@@ -14,7 +14,7 @@ from geometry_msgs.msg import PointStamped
 def get_data(url):
     try:
         r = requests.get(url)
-    except requests.exceptions.RequestException, exc:
+    except requests.exceptions.RequestException as exc:
         print('Exception occured {}'.format(exc))
         return None
 
