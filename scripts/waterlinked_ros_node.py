@@ -18,7 +18,7 @@ def get_data(url):
         print('Exception occured {}'.format(exc))
         return None
 
-    if r.status_code != requests.codes.ok:
+    if r.status_code != requests.codes['ok']:
         print('Got error {}: {}'.format(r.status_code, r.text))
         return None
 
