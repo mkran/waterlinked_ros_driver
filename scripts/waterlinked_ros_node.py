@@ -70,37 +70,41 @@ def waterlinked(base_url):
     while not rospy.is_shutdown():
         data_raw = get_acoustic_position_raw(base_url)
 
-        if last_raw is None:
-            publish_raw(data_raw)
-            last_raw = data_raw
-        else:
-            dist = (data_raw['x'] - last_raw['x']) ** 2 +\
-                   (data_raw['y'] - last_raw['y']) ** 2 +\
-                   (data_raw['z'] - last_raw['z']) ** 2
-            if dist > 1e-10:
+        if data_raw:
+            if last_raw is None:
                 publish_raw(data_raw)
                 last_raw = data_raw
+            else:
+                dist = (data_raw['x'] - last_raw['x']) ** 2 +\
+                       (data_raw['y'] - last_raw['y']) ** 2 +\
+                        (data_raw['z'] - last_raw['z']) ** 2
+                if dist > 1e-10:
+                    publish_raw(data_raw)
+                    last_raw = data_raw
 
         data_filtered = get_acoustic_position_filtered(base_url)
 
-        if last_filtered is None:
-            publish_filtered(data_filtered)
-            last_filtered = data_filtered
-        else:
-            dist = (data_filtered['x'] - last_filtered['x']) ** 2 +\
-                   (data_filtered['y'] - last_filtered['y']) ** 2 +\
-                   (data_filtered['z'] - last_filtered['z']) ** 2
-            if dist > 1e-10:
+        if data_filtered:
+            if last_filtered is None:
                 publish_filtered(data_filtered)
                 last_filtered = data_filtered
+            else:
+                dist = (data_filtered['x'] - last_filtered['x']) ** 2 +\
+                       (data_filtered['y'] - last_filtered['y']) ** 2 +\
+                       (data_filtered['z'] - last_filtered['z']) ** 2
+                if dist > 1e-10:
+                    publish_filtered(data_filtered)
+                    last_filtered = data_filtered
 
         data_global = get_global_position(base_url)
-        global_point = NavSatFix()
-        global_point.header.stamp = rospy.Time.now()
-        global_point.header.frame_id = "/map"
-        global_point.latitude = data_global['lat']
-        global_point.longitude = data_global['lon']
-        global_pub.publish(global_point)
+
+        if data_global:
+            global_point = NavSatFix()
+            global_point.header.stamp = rospy.Time.now()
+            global_point.header.frame_id = "/map"
+            global_point.latitude = data_global['lat']
+            global_point.longitude = data_global['lon']
+            global_pub.publish(global_point)
         rate.sleep()
 
 
